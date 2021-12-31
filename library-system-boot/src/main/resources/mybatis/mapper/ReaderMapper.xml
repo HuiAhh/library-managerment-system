@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huiahh.mapper.ReaderMapper">
+    <resultMap id="ReaderBaseResultMap" type="com.huiahh.pojo.Reader">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="gender" jdbcType="TINYINT" property="gender"/>
+        <result column="year" jdbcType="INTEGER" property="year"/>
+        <result column="id_card" jdbcType="CHAR" property="idCard"/>
+        <result column="tel" jdbcType="CHAR" property="tel"/>
+        <result column="addr" jdbcType="VARCHAR" property="addr"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from reader
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.huiahh.pojo.Reader">
+        insert into reader (id, name, gender,
+                            year, id_card, tel, addr)
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{gender,jdbcType=TINYINT},
+                #{year,jdbcType=INTEGER}, #{idCard,jdbcType=CHAR}, #{tel,jdbcType=CHAR}, #{addr,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.huiahh.pojo.Reader">
+        update reader
+        <set>
+            <if test="name!=null and name!=''">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="gender!=null and gender!=''">gender = #{gender,jdbcType=TINYINT},</if>
+            <if test="year!=null and year!=''">year = #{year,jdbcType=INTEGER},</if>
+            <if test="idCard!=null and idCard!=''">id_card = #{idCard,jdbcType=CHAR},</if>
+            <if test="tel!=null and tel!=''">tel = #{tel,jdbcType=CHAR},</if>
+            <if test="addr!=null and addr!=''">addr = #{addr,jdbcType=VARCHAR}</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+    </select>
+    <select id="selectByGender" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+        where gender = #{gender}
+    </select>
+    <select id="selectByIdCard" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+        where id_card = #{idCard}
+    </select>
+    <select id="selectByYear" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+        where year >= #{start}
+          and year <![CDATA[<= #{end}
+        ]]></select>
+    <select id="selectByTel" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+        where tel = #{tel}
+    </select>
+    <select id="selectByConditions" resultMap="ReaderBaseResultMap">
+        select id, name, gender, year, id_card, tel, addr
+        from reader
+        <where>
+            <if test="name!=null and name!=''">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="gender!=null and gender!=''">gender = #{gender,jdbcType=TINYINT},</if>
+            <if test="year!=null and year!=''">year = #{year,jdbcType=INTEGER},</if>
+            <if test="idCard!=null and idCard!=''">id_card = #{idCard,jdbcType=CHAR},</if>
+            <if test="tel!=null and tel!=''">tel = #{tel,jdbcType=CHAR},</if>
+            <if test="addr!=null and addr!=''">addr = #{addr,jdbcType=VARCHAR}</if>
+        </where>
+    </select>
+</mapper>

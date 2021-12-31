@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+}
+
+.page-header {
+    background: lavender;
+}
+
+.page-aside {
+    background: #545c63;
+}
+
+.page-main {
+    background: cornsilk;
+    z-index: 100;
+}
+
+.page-footer {
+    background: darkslategrey;
+    text-align: center;
+    vertical-align: center;
+}
+
+.page-copyright {
+    color: lavender;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+.aside {
+    width: 100%;
+}
+
+.page-title {
+    text-align: center;
+}
+
+.page-content {
+    text-indent: 2em;
+    margin: 10%;
+}
+
+.page-form {
+    width: 500px;
+    margin: 0 auto;
+}

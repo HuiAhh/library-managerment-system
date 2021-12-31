@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huiahh.mapper.BorrowMapper">
+  <resultMap id="BorrowBaseResultMap" type="com.huiahh.dto.BorrowDto">
+    <id column="id" jdbcType="INTEGER" property="id"/>
+    <result column="reader_id" jdbcType="INTEGER" property="readerId"/>
+    <result column="reader_name" jdbcType="VARCHAR" property="readerName"/>
+    <result column="book_id" jdbcType="INTEGER" property="bookId"/>
+    <result column="book_name" jdbcType="VARCHAR" property="bookName"/>
+    <result column="borrow_time" jdbcType="TIMESTAMP" property="borrowTime"/>
+    <result column="return_borrow" jdbcType="TINYINT" property="returnBorrow"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete
+    from borrow
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.huiahh.pojo.Borrow">
+    insert into borrow (id, reader_id, book_id,
+                        borrow_time, return_borrow)
+    values (#{id,jdbcType=INTEGER}, #{readerId,jdbcType=INTEGER}, #{bookId,jdbcType=INTEGER},
+            #{borrowTime,jdbcType=TIMESTAMP}, #{returnBorrow,jdbcType=TINYINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.huiahh.pojo.Borrow">
+    update borrow
+    <set>
+      <if test="reader_id!=null and reader_id!=''">reader_id = #{readerId,jdbcType=INTEGER},</if>
+      <if test="book_id!=null and book_id!=''">book_id = #{bookId,jdbcType=INTEGER},</if>
+      <if test="borrow_time!=null and borrow_time!=''">borrow_time = #{borrowTime,jdbcType=TIMESTAMP},</if>
+      <if test="return_borrow!=null and return_borrow!=''">return_borrow = #{returnBorrow,jdbcType=TINYINT}</if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BorrowBaseResultMap">
+    select b.id, reader_id, r.name as reader_name, book_id, bo.name as book_name, borrow_time, return_borrow
+    from borrow b,
+         reader r,
+         book bo
+    where b.id = #{id,jdbcType=INTEGER}
+      and r.id = reader_id
+      and bo.id = book_id
+  </select>
+  <select id="selectAll" resultMap="BorrowBaseResultMap">
+    select id, reader_id, book_id, borrow_time, return_borrow
+    from borrow
+  </select>
+  <select id="selectByConditions" resultMap="BorrowBaseResultMap">
+    select b.id, reader_id, r.name as reader_name, book_id, bo.name as book_name, borrow_time, return_borrow
+    from borrow b,
+    reader r,
+    book bo
+    <where>
+      <if test="borrow!=null">
+        <if test="borrow.readerId!=null and borrow.readerId!=''">
+          and reader_id=#{borrow.readerId}
+        </if>
+        <if test="borrow.readerName!=null and borrow.readerName!=''">
+          and r.name like concat('%',#{borrow.readerName},'%')
+        </if>
+        <if test="borrow.bookId!=null and borrow.bookId!=''">
+          and book_id=#{borrow.bookId}
+        </if>
+        <if test="borrow.bookName!=null and borrow.bookName!=''">
+          and bo.name like concat('%',#{borrow.bookName},'%')
+        </if>
+        <if test="borrow.borrowTime!=null and borrow.borrowTime!=''">
+          and borrow_time=#{borrow.borrowTime}
+        </if>
+        <if test="borrow.returnBorrow!=null and borrow.returnBorrow!=''">
+          and return_borrow=#{borrow.returnBorrow}
+        </if>
+      </if>
+      <if test="begin!=null">
+        and (DATEDIFF(borrow_time,#{begin,jdbcType=DATE})>=0
+        or DATEDIFF(DATE_ADD(borrow_time,INTERVAL return_borrow DAY),#{begin,jdbcType=DATE})>=0
+        )
+      </if>
+      <if test="end!=null">
+        and (
+        DATEDIFF(#{end,jdbcType=DATE},borrow_time)>=0
+        or DATEDIFF(#{end,jdbcType=DATE},DATE_ADD(borrow_time,INTERVAL return_borrow DAY))>=0
+        )
+      </if>
+      and r.id = reader_id
+      and bo.id = book_id
+    </where>
+  </select>
+  <select id="selectByBorrowTime" resultMap="BorrowBaseResultMap">
+    select b.id, reader_id, r.name as reader_name, book_id, bo.name as book_name, borrow_time, return_borrow
+    from borrow b,
+    reader r,
+    book bo
+    <where>
+      <if test="begin!=null">
+        and DATEDIFF(borrow_time,#{begin,jdbcType=DATE})>=0
+      </if>
+      <if test="end!=null">
+        and
+        DATEDIFF(#{end,jdbcType=DATE},borrow_time)>=0
+      </if>
+      and r.id = reader_id
+      and bo.id = book_id
+    </where>
+  </select>
+  <select id="selectBorrowsByReturnBorrowDate" resultMap="BorrowBaseResultMap">
+    select b.id, reader_id, r.name as reader_name, book_id, bo.name as book_name, borrow_time, return_borrow
+    from borrow b,
+    reader r,
+    book bo
+    <where>
+      <if test="begin!=null">
+        and
+        DATEDIFF(DATE_ADD(borrow_time,INTERVAL return_borrow DAY),#{begin,jdbcType=DATE})>=0
+      </if>
+      <if test="end!=null">
+        and
+        DATEDIFF(#{end,jdbcType=DATE},DATE_ADD(borrow_time,INTERVAL return_borrow DAY))>=0
+      </if>
+      and r.id = reader_id
+      and bo.id = book_id
+    </where>
+  </select>
+  <select id="selectBorrowsByReaderId" resultMap="BorrowBaseResultMap">
+    select b.id, reader_id, r.name as reader_name, book_id, bo.name as book_name, borrow_time, return_borrow
+    from borrow b,
+         reader r,
+         book bo
+    where reader_id = #{readerId}
+      and r.id = reader_id
+      and r.id = reader_id
+      and bo.id = book_id
+  </select>
+  <select id="selectBorrowsByBookId" resultMap="BorrowBaseResultMap">
+    select b.id, reader_id, r.name as reader_name, book_id, bo.name as book_name, borrow_time, return_borrow
+    from borrow b,
+         reader r,
+         book bo
+    where book_id = #{bookId}
+      and r.id = reader_id
+      and bo.id = book_id
+  </select>
+</mapper>

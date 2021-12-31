@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huiahh.mapper.BookMapper">
+    <resultMap id="BookBaseResultMap" type="com.huiahh.pojo.Book">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="author" jdbcType="VARCHAR" property="author"/>
+        <result column="publishing" jdbcType="VARCHAR" property="publishing"/>
+        <result column="isbn" jdbcType="CHAR" property="isbn"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="remain" jdbcType="INTEGER" property="remain"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from book
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.huiahh.pojo.Book">
+        insert into book (id, name, author,
+                          publishing, isbn, count,
+                          remain)
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR},
+                #{publishing,jdbcType=VARCHAR}, #{isbn,jdbcType=CHAR}, #{count,jdbcType=INTEGER},
+                #{remain,jdbcType=INTEGER})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.huiahh.pojo.Book">
+        update book
+        <set>
+            <if test="name!=null and name!=''">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="author!=null and author!=''">author = #{author,jdbcType=VARCHAR},</if>
+            <if test="publishing!=null and publishing!=''">publishing = #{publishing,jdbcType=VARCHAR},</if>
+            <if test="isbn!=null and isbn!=''">isbn = #{isbn,jdbcType=CHAR},</if>
+            <if test="count!=null and count!=''">count = #{count,jdbcType=INTEGER},</if>
+            <if test="remain!=null and remain!=''">remain = #{remain,jdbcType=INTEGER}</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BookBaseResultMap">
+        select id, name, author, publishing, isbn, count, remain
+        from book
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BookBaseResultMap">
+        select id, name, author, publishing, isbn, count, remain
+        from book
+    </select>
+    <select id="searchByName" resultMap="BookBaseResultMap">
+        <bind name="bookKeyWord" value=" '%' + name + '%' "/>
+        select id, name, author, publishing, isbn, count, remain
+        from book
+        where name like #{bookKeyWord}
+    </select>
+    <select id="searchByConditions" resultMap="BookBaseResultMap">
+        select id, name, author, publishing, isbn, count, remain
+        from book
+        <where>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="author!=null and author!=''">
+                and author like concat('%',#{author},'%')
+            </if>
+            <if test="publishing!=null and publishing!=''">
+                and publishing like concat('%',#{publishing},'%')
+            </if>
+            <if test="remain!=null and remain!=0">
+                and remain>=#{remain}
+            </if>
+        </where>
+    </select>
+</mapper>

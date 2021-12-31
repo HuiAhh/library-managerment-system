@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huiahh.mapper.AdminMapper">
+    <resultMap id="AdminBaseResultMap" type="com.huiahh.pojo.Admin">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user" jdbcType="VARCHAR" property="user"/>
+        <result column="pwd" jdbcType="VARCHAR" property="pwd"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from admin
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.huiahh.pojo.Admin">
+        insert into admin (id, user, pwd)
+        values (#{id,jdbcType=INTEGER}, #{user,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.huiahh.pojo.Admin">
+        update admin
+        <set>
+            <if test="user!=null and user!=''">user = #{user,jdbcType=VARCHAR},</if>
+            <if test="pwd!=null and pwd!=''">pwd = #{pwd,jdbcType=VARCHAR}</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="AdminBaseResultMap">
+        select id, user, pwd
+        from admin
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="AdminBaseResultMap">
+        select id, user, pwd
+        from admin
+    </select>
+    <select id="selectByUser" parameterType="java.lang.String" resultMap="AdminBaseResultMap">
+        select id, user, pwd
+        from admin
+        where user = #{user,jdbcType=VARCHAR}
+    </select>
+</mapper>
